@@ -3,7 +3,7 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import { Suspense, useRef, useEffect } from "react";
+import { Suspense, useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 
 function Robot() {
@@ -11,6 +11,8 @@ function Robot() {
   const groupRef = useRef<THREE.Group>(null);
   const { actions } = useAnimations(animations, groupRef);
   const scrollRef = useRef(0);
+  const alertMixRef = useRef(0);
+  const glowMatsRef = useRef<Array<THREE.MeshStandardMaterial | THREE.MeshPhysicalMaterial>>([]);
 
   useEffect(() => {
     Object.values(actions).forEach((action) => {
@@ -22,6 +24,16 @@ function Robot() {
     const onScroll = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       scrollRef.current = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+
+      const features = document.getElementById("features");
+      if (!features) {
+        alertMixRef.current = 0;
+        return;
+      }
+      const triggerStart = features.offsetTop - window.innerHeight * 0.45;
+      const triggerRange = window.innerHeight * 0.55;
+      const raw = (window.scrollY - triggerStart) / triggerRange;
+      alertMixRef.current = THREE.MathUtils.clamp(raw, 0, 1);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
@@ -30,6 +42,7 @@ function Robot() {
 
   useEffect(() => {
     // Material overrides
+    glowMatsRef.current = [];
     scene.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
       const sourceMat = child.material as THREE.MeshStandardMaterial | THREE.MeshPhysicalMaterial;
@@ -72,6 +85,7 @@ function Robot() {
         m.metalness = 0.04;
         m.roughness = 0.08;
         m.toneMapped = false;
+        glowMatsRef.current.push(m);
         return;
       }
 
@@ -83,6 +97,7 @@ function Robot() {
         m.metalness = 0.1;
         m.roughness = 0.12;
         m.toneMapped = false;
+        glowMatsRef.current.push(m);
         return;
       }
 
@@ -94,6 +109,7 @@ function Robot() {
         m.metalness = 0.4;
         m.roughness = 0.15;
         m.toneMapped = false;
+        glowMatsRef.current.push(m);
         return;
       }
 
@@ -112,6 +128,21 @@ function Robot() {
     // Full scroll-driven rotation.
     g.rotation.y = -scrollRef.current * Math.PI * 2;
     g.position.y = -0.1 + Math.sin(t * 0.8) * 0.04;
+
+    const mix = alertMixRef.current;
+    const blue = new THREE.Color("#57c7ff");
+    const red = new THREE.Color("#ff0000");
+    const darkRedBase = new THREE.Color("#2a0000");
+    const neutralBase = new THREE.Color("#0a2f5a");
+    const redMix = THREE.MathUtils.smoothstep(mix, 0.35, 1);
+    const hardMix = redMix > 0.85 ? 1 : redMix;
+    const glowColor = blue.clone().lerp(red, hardMix);
+    const baseColor = neutralBase.clone().lerp(darkRedBase, hardMix);
+    for (const mat of glowMatsRef.current) {
+      mat.emissive.copy(glowColor);
+      mat.color.copy(baseColor);
+      mat.emissiveIntensity = THREE.MathUtils.lerp(1.8, 2.8, hardMix);
+    }
   });
 
   return (
@@ -124,6 +155,30 @@ function Robot() {
 useGLTF.preload("/3d/flyingrobot.glb");
 
 export default function RobotScene() {
+  const [underLightColor, setUnderLightColor] = useState("#51d2ff");
+
+  useEffect(() => {
+    const onScroll = () => {
+      const features = document.getElementById("features");
+      if (!features) {
+        setUnderLightColor("#51d2ff");
+        return;
+      }
+      const triggerStart = features.offsetTop - window.innerHeight * 0.45;
+      const triggerRange = window.innerHeight * 0.55;
+      const raw = (window.scrollY - triggerStart) / triggerRange;
+      const mix = THREE.MathUtils.clamp(raw, 0, 1);
+      const redMix = THREE.MathUtils.smoothstep(mix, 0.35, 1);
+      const t = redMix > 0.85 ? 1 : redMix;
+      const color = new THREE.Color("#51d2ff").lerp(new THREE.Color("#ff0000"), t);
+      setUnderLightColor(`#${color.getHexString()}`);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <Canvas
       camera={{ position: [0, 2, 4], fov: 40 }}
@@ -145,7 +200,7 @@ export default function RobotScene() {
         <pointLight position={[0, 1.2, 6]} color="#8cd9ff" intensity={2.3} distance={12} decay={2} />
         <pointLight position={[-4, 0.5, 2.6]} color="#2ca3ff" intensity={1.35} distance={10} decay={2} />
         <pointLight position={[4, 0.5, 2.6]} color="#2ca3ff" intensity={1.35} distance={10} decay={2} />
-        <pointLight position={[0, -2, 2.5]} color="#51d2ff" intensity={0.24} distance={6} decay={2} />
+        <pointLight position={[0, -2, 2.5]} color={underLightColor} intensity={0.24} distance={6} decay={2} />
 
         <Robot />
 
