@@ -71,9 +71,12 @@ function Robot() {
 
       // Dark panels / body pieces
       if (/body|torso|head|face|helmet|arm|leg|shoulder|panel|shell/.test(name)) {
-        m.color.set("#04070d");
+        m.color.set("#050a12");
+        m.emissive.set("#02070f");
+        m.emissiveIntensity = 0.1;
         m.metalness = 0.58;
         m.roughness = 0.2;
+        m.envMapIntensity = 0.42;
         return;
       }
 
@@ -93,7 +96,7 @@ function Robot() {
       if (/led|light|neon|strip|trim|accent|line|ring|screen|visor|sensor|lamp/.test(name)) {
         m.color.set("#072846");
         m.emissive.set("#69d5ff");
-        m.emissiveIntensity = 2.1;
+        m.emissiveIntensity = 1.35;
         m.metalness = 0.1;
         m.roughness = 0.12;
         m.toneMapped = false;
@@ -105,7 +108,7 @@ function Robot() {
       if (/foot|feet|shoe|sole|base|bottom|wheel/.test(name)) {
         m.color.set("#051022");
         m.emissive.set("#47c8ff");
-        m.emissiveIntensity = 1.45;
+        m.emissiveIntensity = 0.95;
         m.metalness = 0.4;
         m.roughness = 0.15;
         m.toneMapped = false;
@@ -114,7 +117,7 @@ function Robot() {
       }
 
       // Catch-all keeps a deep glossy black style
-      m.color.set("#070b13");
+      m.color.set("#070d15");
       m.metalness = 0.48;
       m.roughness = 0.24;
     });
@@ -141,7 +144,7 @@ function Robot() {
     for (const mat of glowMatsRef.current) {
       mat.emissive.copy(glowColor);
       mat.color.copy(baseColor);
-      mat.emissiveIntensity = THREE.MathUtils.lerp(1.8, 2.8, hardMix);
+      mat.emissiveIntensity = THREE.MathUtils.lerp(1.15, 1.75, hardMix);
     }
   });
 
@@ -189,28 +192,28 @@ export default function RobotScene() {
       onCreated={({ gl, camera }) => {
         gl.outputColorSpace = THREE.SRGBColorSpace;
         gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = 0.38;
+        gl.toneMappingExposure = 0.31;
         gl.setClearColor(0x000000, 0);
         camera.lookAt(0, 1, 0);
       }}
     >
       <Suspense fallback={null}>
-        <ambientLight intensity={0.13} color="#5f93be" />
-        <hemisphereLight args={["#5ac9ff", "#02040b", 0.22]} />
-        <pointLight position={[0, 1.2, 6]} color="#8cd9ff" intensity={2.3} distance={12} decay={2} />
-        <pointLight position={[-4, 0.5, 2.6]} color="#2ca3ff" intensity={1.35} distance={10} decay={2} />
-        <pointLight position={[4, 0.5, 2.6]} color="#2ca3ff" intensity={1.35} distance={10} decay={2} />
-        <pointLight position={[0, -2, 2.5]} color={underLightColor} intensity={0.24} distance={6} decay={2} />
+        <ambientLight intensity={0.09} color="#395975" />
+        <hemisphereLight args={["#45a8dd", "#03070f", 0.15]} />
+        <pointLight position={[0, 1.15, 5.7]} color="#73b9e8" intensity={1.45} distance={10.5} decay={2} />
+        <pointLight position={[-3.6, 0.45, 2.2]} color="#257ebd" intensity={0.62} distance={8.5} decay={2} />
+        <pointLight position={[3.6, 0.45, 2.2]} color="#257ebd" intensity={0.62} distance={8.5} decay={2} />
+        <pointLight position={[0, -2, 2.4]} color={underLightColor} intensity={0.09} distance={5.2} decay={2} />
 
         <Robot />
 
         <EffectComposer>
           <Bloom
-            luminanceThreshold={0.74}
+            luminanceThreshold={0.84}
             luminanceSmoothing={0.88}
-            intensity={0.22}
+            intensity={0.1}
             mipmapBlur
-            radius={0.26}
+            radius={0.16}
           />
         </EffectComposer>
       </Suspense>
