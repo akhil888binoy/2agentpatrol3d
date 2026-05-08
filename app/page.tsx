@@ -10,15 +10,6 @@ const bits = [
   { text: "01001 // index", style: { top: "14%", right: "6%", color: "rgba(77,159,255,.38)", animationDelay: "1.7s" } },
 ];
 
-const tickerItems = [
-  { text: "AGENT_0042 · SESSION ACTIVE · 14 TOOL CALLS", value: "CLEAN",   up: true  },
-  { text: "AGENT_0038 · POLICY BREACH DETECTED",          value: "BLOCKED", up: false },
-  { text: "SESSION #8412 · RUNTIME 4.2s · AUDIT LOGGED",  value: "VERIFIED",up: true  },
-  { text: "AGENT_0051 · NEW DEPLOY · DEPENDENCY SCAN",    value: "SCANNING",up: true  },
-  { text: "AGENT_0033 · TOOL CALL LIMIT EXCEEDED",        value: "HALTED",  up: false },
-  { text: "SESSION #8406 · 3 AGENTS · ENTERPRISE",        value: "SECURED", up: true  },
-  { text: "AGENT_0027 · UNAUTHORIZED API SCOPE",          value: "FLAGGED", up: false },
-];
 
 function LogoMark() {
   const hidden = new Set([1, 5, 6]);
@@ -91,8 +82,6 @@ function Chip({
 
 
 export default function Home() {
-  const doubled = [...tickerItems, ...tickerItems];
-
   return (
     <div style={{ fontFamily: "var(--font-space, 'Space Grotesk', sans-serif)", color: "var(--cream)" }}>
 
@@ -197,22 +186,6 @@ export default function Home() {
         </h1>
       </div>
 
-      {/* Ticker */}
-      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 25, borderTop: "1px solid rgba(0,102,255,.25)", background: "rgba(6,8,16,.9)", backdropFilter: "blur(6px)", color: "var(--cream)", overflow: "hidden", height: 44, display: "flex", alignItems: "center", fontFamily: "var(--font-mono)", fontSize: 12, letterSpacing: "0.14em" }}>
-        <div style={{ flexShrink: 0, background: "var(--accent)", color: "#fff", padding: "0 18px", height: "100%", display: "flex", alignItems: "center", fontWeight: 700, letterSpacing: "0.3em", fontSize: 11, boxShadow: "0 0 24px rgba(0,102,255,.45)" }}>
-          AGENT FEED
-        </div>
-        <div style={{ display: "flex", gap: 48, whiteSpace: "nowrap", animation: "track 60s linear infinite", paddingLeft: 48 }}>
-          {doubled.map((item, i) => (
-            <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 10, opacity: .85 }}>
-              {item.text}
-              <span style={{ color: item.up ? "var(--success)" : "#E63946" }}>
-                {item.value} <span style={{ fontSize: 10 }}>{item.up ? "▲" : "▼"}</span>
-              </span>
-            </span>
-          ))}
-        </div>
-      </div>
     </div>
 
     <FeaturesSection />
