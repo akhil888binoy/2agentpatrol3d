@@ -1,26 +1,128 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --green-deep:      #060810;
+  --green:           #0A0F1E;
+  --green-mid:       #0F1628;
+  --ink:             #080C18;
+
+  /* Surfaces */
+  --surface-1:       #0F1628;
+  --surface-2:       #141D35;
+  --surface-3:       #1A2540;
+
+  /* Borders */
+  --border-primary:  #1E2D4A;
+  --border-secondary:#253560;
+
+  /* Accent — command blue */
+  --green-glow:      #0066FF;
+  --accent:          #0066FF;
+  --accent-hover:    #0052CC;
+  --accent-glow:     rgba(0,102,255,0.15);
+  --accent-2:        #4D9FFF;
+
+  /* Status */
+  --alert:           #E63946;
+  --amber:           #F5A623;
+  --success:         #00C896;
+  --neutral:         #4A5568;
+
+  /* Text */
+  --cream:           #E8ECF4;
+  --text-secondary:  #8892A4;
+  --text-tertiary:   #4A5568;
+  --text-accent:     #4D9FFF;
+
+  /* Code */
+  --code-bg:         #080C18;
+  --code-text:       #00FF88;
+  --code-label:      #4D9FFF;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-space, "Space Grotesk", sans-serif);
+  color: var(--cream);
+  background: var(--green-deep);
+}
+
+/* HUD grid overlay */
+.stage-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 102, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 102, 255, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(80% 80% at 50% 50%, #000, transparent 80%);
+  z-index: 5;
+}
+
+/* Scanlines + vignette */
+.stage-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 3px),
+    radial-gradient(80% 60% at 50% 110%, rgba(0, 0, 0, 0.5), transparent 60%);
+  z-index: 4;
+}
+
+/* Animations */
+@keyframes ring-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes ring-spin-rev {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+@keyframes track {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+@keyframes card-reveal {
+  0%   { opacity: 0; transform: translateY(48px) scale(0.94); filter: blur(10px); }
+  55%  { filter: blur(0px); }
+  100% { opacity: 1; transform: translateY(0) scale(1);  filter: blur(0px); }
+}
+@keyframes heading-reveal {
+  0%   { opacity: 0; transform: translateY(32px); filter: blur(8px); }
+  55%  { filter: blur(0px); }
+  100% { opacity: 1; transform: translateY(0);  filter: blur(0px); }
+}
+@keyframes label-from-left {
+  from { opacity: 0; transform: translateX(-32px) translateY(-50%); filter: blur(4px); }
+  to   { opacity: 1; transform: translateX(0)     translateY(-50%); filter: blur(0px); }
+}
+@keyframes label-from-right {
+  from { opacity: 0; transform: translateX(32px)  translateY(-50%); filter: blur(4px); }
+  to   { opacity: 1; transform: translateX(0)     translateY(-50%); filter: blur(0px); }
+}
+@keyframes closing-reveal {
+  from { opacity: 0; transform: translateY(16px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0px); }
+}
+@keyframes dot-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+@keyframes spin-cw  { from { transform: rotate(0deg); }  to { transform: rotate(360deg);  } }
+@keyframes spin-ccw { from { transform: rotate(0deg); }  to { transform: rotate(-360deg); } }
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  45%       { opacity: 0.25; }
+  50%       { opacity: 0.9; }
 }
