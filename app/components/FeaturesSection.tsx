@@ -87,10 +87,10 @@ export default function FeaturesSection() {
           ref={(el) => reg(el, i)}
           style={{
             position: "absolute", top: card.pos.top, left: card.pos.left, right: card.pos.right,
-            width: "30%", height: "34%",
+            width: "30%",
             background: "rgba(15,22,40,.92)", backdropFilter: "blur(12px)",
             border: "1px solid var(--border-primary)",
-            padding: "28px 28px 24px", display: "flex", flexDirection: "column", overflow: "hidden",
+            padding: "22px 22px 20px", display: "flex", flexDirection: "column", overflow: "hidden",
             animation: `card-reveal 0.85s cubic-bezier(0.16,1,0.3,1) ${card.delay}s forwards`,
             animationPlayState: "paused",
           }}
@@ -109,7 +109,7 @@ export default function FeaturesSection() {
             {card.title}
           </h3>
 
-          <p style={{ fontFamily: "var(--font-space)", fontSize: "clamp(11px,0.85vw,13px)", color: "var(--text-secondary)", lineHeight: 1.75, flex: 1 }}>
+          <p style={{ fontFamily: "var(--font-space)", fontSize: "clamp(11px,0.85vw,13px)", color: "var(--text-secondary)", lineHeight: 1.75 }}>
             {card.body}
           </p>
         </div>
